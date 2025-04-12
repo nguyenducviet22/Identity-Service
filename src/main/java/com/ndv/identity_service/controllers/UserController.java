@@ -4,6 +4,7 @@ import com.ndv.identity_service.Services.UserService;
 import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
 import com.ndv.identity_service.domain.entities.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User createUser(@RequestBody CreateUserRequest request){
+    public User createUser(@Valid @RequestBody CreateUserRequest request){
         return userService.createUser(request);
     }
 
