@@ -4,6 +4,7 @@ import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
 import com.ndv.identity_service.domain.entities.User;
 import com.ndv.identity_service.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class UserService {
 
     public User createUser(CreateUserRequest request){
         User user = new User();
+        if (userRepository.existsByUsername(request.getUsername())){
+            throw new RuntimeException("Username existed!");
+        }
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
         user.setFirstName(request.getFirstName());
@@ -32,7 +36,7 @@ public class UserService {
 
     public User getUser(UUID id){
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User does not exist with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + id));
     }
 
     public User updateUser(UUID id, UpdateUserRequest request) {
