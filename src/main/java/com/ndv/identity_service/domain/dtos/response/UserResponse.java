@@ -1,17 +1,20 @@
-package com.ndv.identity_service.domain.dtos.request;
+package com.ndv.identity_service.domain.dtos.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateUserRequest {
+public class UserResponse {
 
+    UUID id;
+    String username;
     String password;
     String firstName;
     String lastName;

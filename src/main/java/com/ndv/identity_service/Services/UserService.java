@@ -5,6 +5,7 @@ import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
 import com.ndv.identity_service.domain.entities.User;
 import com.ndv.identity_service.exception.AppException;
 import com.ndv.identity_service.exception.ErrorCode;
+import com.ndv.identity_service.mappers.UserMapper;
 import com.ndv.identity_service.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,19 +17,15 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public User createUser(CreateUserRequest request){
-        User user = new User();
         if (userRepository.existsByUsername(request.getUsername())){
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
-
+        User user = userMapper.toUser(request);
         return userRepository.save(user);
     }
 
@@ -43,10 +40,7 @@ public class UserService {
 
     public User updateUser(UUID id, UpdateUserRequest request) {
         User user = getUser(id);
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
-
+        userMapper.updateUser(user, request);
         return userRepository.save(user);
     }
 

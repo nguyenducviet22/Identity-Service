@@ -2,6 +2,7 @@ package com.ndv.identity_service.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -13,14 +14,15 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-    private String username;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private LocalDate dob;
+    UUID id;
+    String username;
+    String password;
+    String firstName;
+    String lastName;
+    LocalDate dob;
 }

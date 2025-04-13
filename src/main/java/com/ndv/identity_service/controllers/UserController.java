@@ -4,7 +4,9 @@ import com.ndv.identity_service.Services.UserService;
 import com.ndv.identity_service.domain.dtos.request.ApiResponse;
 import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
+import com.ndv.identity_service.domain.dtos.response.UserResponse;
 import com.ndv.identity_service.domain.entities.User;
+import com.ndv.identity_service.mappers.UserMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,27 +20,33 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping
-    public ApiResponse<User> createUser(@Valid @RequestBody CreateUserRequest request){
-        ApiResponse<User> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(userService.createUser(request));
+    public ApiResponse<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request){
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        User user = userService.createUser(request);
+        UserResponse userResponse = userMapper.toUserResponse(user);
+        apiResponse.setResult(userResponse);
         return apiResponse;
     }
 
     @GetMapping
-    public List<User> getAllUsers(){
-        return userService.getAllUsers();
+    public List<UserResponse> getAllUsers(){
+        return userService.getAllUsers().stream()
+                .map(user -> userMapper.toUserResponse(user)).toList();
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable UUID id){
-        return userService.getUser(id);
+    public UserResponse getUser(@PathVariable UUID id){
+        User user = userService.getUser(id);
+        return userMapper.toUserResponse(user);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest request){
-        return userService.updateUser(id, request);
+    public UserResponse updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest request){
+        User updatedUser = userService.updateUser(id, request);
+        return userMapper.toUserResponse(updatedUser);
     }
 
     @DeleteMapping("/{id}")
