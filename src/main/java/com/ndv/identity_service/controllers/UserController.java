@@ -1,6 +1,7 @@
 package com.ndv.identity_service.controllers;
 
 import com.ndv.identity_service.Services.UserService;
+import com.ndv.identity_service.domain.dtos.request.ApiResponse;
 import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
 import com.ndv.identity_service.domain.entities.User;
@@ -19,8 +20,10 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User createUser(@Valid @RequestBody CreateUserRequest request){
-        return userService.createUser(request);
+    public ApiResponse<User> createUser(@Valid @RequestBody CreateUserRequest request){
+        ApiResponse<User> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.createUser(request));
+        return apiResponse;
     }
 
     @GetMapping

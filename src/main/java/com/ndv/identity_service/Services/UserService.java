@@ -3,6 +3,8 @@ package com.ndv.identity_service.Services;
 import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
 import com.ndv.identity_service.domain.entities.User;
+import com.ndv.identity_service.exception.AppException;
+import com.ndv.identity_service.exception.ErrorCode;
 import com.ndv.identity_service.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,7 @@ public class UserService {
     public User createUser(CreateUserRequest request){
         User user = new User();
         if (userRepository.existsByUsername(request.getUsername())){
-            throw new RuntimeException("Username existed!");
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
