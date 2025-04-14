@@ -7,7 +7,8 @@ import lombok.*;
 public enum ErrorCode {
 
     USERNAME_EXISTED(101, "Username existed!"),
-    USER_NOT_EXISTED(102, "User is not existed!")
+    USER_NOT_EXISTED(102, "User is not existed!"),
+    UNAUTHENTICATED(103, "Unauthenticated!")
     ;
 
     @Getter
