@@ -6,7 +6,8 @@ import lombok.*;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    USERNAME_EXISTED(101, "Username existed!")
+    USERNAME_EXISTED(101, "Username existed!"),
+    USER_NOT_EXISTED(102, "User is not existed!")
     ;
 
     @Getter
