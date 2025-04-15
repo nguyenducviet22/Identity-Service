@@ -9,11 +9,14 @@ import com.ndv.identity_service.domain.entities.User;
 import com.ndv.identity_service.mappers.UserMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -33,6 +36,9 @@ public class UserController {
 
     @GetMapping
     public List<UserResponse> getAllUsers(){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Username: {}", authentication.getName());
+        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
         return userService.getAllUsers().stream()
                 .map(user -> userMapper.toUserResponse(user)).toList();
     }

@@ -4,6 +4,7 @@ import com.ndv.identity_service.domain.dtos.request.AuthenticationRequest;
 import com.ndv.identity_service.domain.dtos.request.IntrospectRequest;
 import com.ndv.identity_service.domain.dtos.response.AuthenticationResponse;
 import com.ndv.identity_service.domain.dtos.response.IntrospectResponse;
+import com.ndv.identity_service.domain.entities.User;
 import com.ndv.identity_service.exception.AppException;
 import com.ndv.identity_service.exception.ErrorCode;
 import com.ndv.identity_service.repositories.UserRepository;
@@ -18,9 +19,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +38,7 @@ public class AuthenticationService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request){
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -42,7 +46,7 @@ public class AuthenticationService {
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        var token = generateToken(request.getUsername());
+        var token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -50,14 +54,14 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String generateToken(String username){
+    private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("ndv.com")
                 .issueTime(new Date(System.currentTimeMillis()))
                 .expirationTime(new Date(System.currentTimeMillis() + jwtExpiryMs))
-                .claim("customClaim", "Custom")
+                .claim("scope", buildScope(user))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -86,5 +90,11 @@ public class AuthenticationService {
         return IntrospectResponse.builder()
                 .valid(verified && expiryTime.after(new Date(System.currentTimeMillis())))
                 .build();
+    }
+
+    private String buildScope(User user){
+        StringJoiner stringJoiner = new StringJoiner(" ");
+        if (!CollectionUtils.isEmpty(user.getRoles())) user.getRoles().forEach(s -> stringJoiner.add(s));
+        return stringJoiner.toString();
     }
 }
