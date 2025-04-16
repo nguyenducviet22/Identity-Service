@@ -10,6 +10,10 @@ import com.ndv.identity_service.mappers.UserMapper;
 import com.ndv.identity_service.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -42,13 +47,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')") //Check role before running method
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }
 
+    @PostAuthorize("returnObject.username == authentication.name") //Get info of this user
     public User getUser(UUID id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + id));
+    }
+
+    public User getMyInfo(){
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist!"));
     }
 
     public User updateUser(UUID id, UpdateUserRequest request) {

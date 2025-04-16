@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,14 +51,14 @@ public class ErrorController {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-//    @ExceptionHandler(BadCredentialsException.class)
-//    public ResponseEntity<ApiResponse> handleBadCredentialsException(BadCredentialsException ex){
-//        ApiResponse error = ApiResponse.builder()
-//                .code(HttpStatus.UNAUTHORIZED.value())
-//                .message("Incorrect Email or Password!")
-//                .build();
-//        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
-//    }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse> handleBadCredentialsException(BadCredentialsException ex){
+        ApiResponse error = ApiResponse.builder()
+                .code(HttpStatus.UNAUTHORIZED.value())
+                .message("Incorrect Email or Password!")
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
