@@ -4,8 +4,6 @@ import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
 import com.ndv.identity_service.domain.entities.User;
 import com.ndv.identity_service.domain.enums.Role;
-import com.ndv.identity_service.exception.AppException;
-import com.ndv.identity_service.exception.ErrorCode;
 import com.ndv.identity_service.mappers.UserMapper;
 import com.ndv.identity_service.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +29,9 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public User createUser(CreateUserRequest request){
+    public User createUser(CreateUserRequest request) throws Exception {
         if (userRepository.existsByUsername(request.getUsername())){
-            throw new AppException(ErrorCode.USERNAME_EXISTED);
+            throw new Exception("Username existed!");
         }
         User user = userMapper.toUser(request);
 

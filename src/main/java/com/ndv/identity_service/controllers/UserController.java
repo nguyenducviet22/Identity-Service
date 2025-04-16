@@ -26,7 +26,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public ApiResponse<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request){
+    public ApiResponse<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) throws Exception {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         User user = userService.createUser(request);
         UserResponse userResponse = userMapper.toUserResponse(user);

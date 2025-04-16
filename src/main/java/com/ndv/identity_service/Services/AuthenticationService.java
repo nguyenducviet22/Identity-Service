@@ -5,8 +5,6 @@ import com.ndv.identity_service.domain.dtos.request.IntrospectRequest;
 import com.ndv.identity_service.domain.dtos.response.AuthenticationResponse;
 import com.ndv.identity_service.domain.dtos.response.IntrospectResponse;
 import com.ndv.identity_service.domain.entities.User;
-import com.ndv.identity_service.exception.AppException;
-import com.ndv.identity_service.exception.ErrorCode;
 import com.ndv.identity_service.repositories.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -17,13 +15,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.StringJoiner;
 
@@ -33,6 +29,7 @@ import java.util.StringJoiner;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private final Long jwtExpiryMs = 86400000L;
 
@@ -41,11 +38,10 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new BadCredentialsException("Incorrect Username or Password!"));
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        if (!authenticated) throw new BadCredentialsException("Incorrect Email or Password!");
+        if (!authenticated) throw new BadCredentialsException("Incorrect Username or Password!");
 
         var token = generateToken(user);
 

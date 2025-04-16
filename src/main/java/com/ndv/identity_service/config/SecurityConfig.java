@@ -36,7 +36,8 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwtConfigurer ->
-                                jwtConfigurer.decoder(jwtDecoder())))
+                                jwtConfigurer.decoder(jwtDecoder()))
+                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
                 .csrf(csrf -> csrf.disable()
 
                 );

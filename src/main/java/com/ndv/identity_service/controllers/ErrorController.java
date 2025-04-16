@@ -1,4 +1,4 @@
-package com.ndv.identity_service.exception;
+package com.ndv.identity_service.controllers;
 
 import com.ndv.identity_service.domain.dtos.request.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,7 +47,7 @@ public class ErrorController {
     public ResponseEntity<ApiResponse> handleEntityNotFoundException(EntityNotFoundException ex){
         ApiResponse error = ApiResponse.builder()
                 .code(HttpStatus.NOT_FOUND.value())
-                .message("Incorrect Email or Password!")
+                .message(ex.getMessage())
                 .build();
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
@@ -55,7 +56,7 @@ public class ErrorController {
     public ResponseEntity<ApiResponse> handleBadCredentialsException(BadCredentialsException ex){
         ApiResponse error = ApiResponse.builder()
                 .code(HttpStatus.UNAUTHORIZED.value())
-                .message("Incorrect Email or Password!")
+                .message(ex.getMessage())
                 .build();
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
@@ -69,13 +70,12 @@ public class ErrorController {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AppException.class)
-    public ResponseEntity<ApiResponse> handleAppException(AppException ex){
-        ErrorCode errorCode = ex.getErrorCode();
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException ex){
         ApiResponse error = ApiResponse.builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
+                .code(HttpStatus.FORBIDDEN.value())
+                .message("You do not have permission!")
                 .build();
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }
