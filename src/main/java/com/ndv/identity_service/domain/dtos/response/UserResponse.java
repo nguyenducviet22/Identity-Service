@@ -1,5 +1,6 @@
 package com.ndv.identity_service.domain.dtos.response;
 
+import com.ndv.identity_service.domain.entities.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,5 +20,5 @@ public class UserResponse {
     String firstName;
     String lastName;
     LocalDate dob;
-    Set<String> roles;
+    Set<Role> roles;
 }

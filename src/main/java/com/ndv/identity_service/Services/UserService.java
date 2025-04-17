@@ -2,6 +2,7 @@ package com.ndv.identity_service.Services;
 
 import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
+import com.ndv.identity_service.domain.dtos.response.UserResponse;
 import com.ndv.identity_service.domain.entities.User;
 import com.ndv.identity_service.domain.enums.Role;
 import com.ndv.identity_service.mappers.UserMapper;
@@ -29,44 +30,49 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public User createUser(CreateUserRequest request) throws Exception {
-        if (userRepository.existsByUsername(request.getUsername())){
+    public UserResponse createUser(CreateUserRequest request) throws Exception {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new Exception("Username existed!");
         }
-        User user = userMapper.toUser(request);
+        User newUser = userMapper.toUser(request);
 
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        Set<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-        user.setRoles(roles);
+//        Set<String> roles = new HashSet<>();
+//        roles.add(Role.USER.name());
+//        user.setRoles(roles);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(newUser);
+        return userMapper.toUserResponse(savedUser);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')") //Check role before running method
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> userMapper.toUserResponse(user))
+                .toList();
     }
 
     @PostAuthorize("returnObject.username == authentication.name") //Get info of this user
-    public User getUser(UUID id){
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + id));
+    public UserResponse getUser(UUID id) {
+        return userMapper.toUserResponse(userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + id)));
     }
 
-    public User getMyInfo(){
+    public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User does not exist!"));
+        return userMapper.toUserResponse(userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist!")));
     }
 
-    public User updateUser(UUID id, UpdateUserRequest request) {
-        User user = getUser(id);
-        userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        return userRepository.save(user);
+    public UserResponse updateUser(UUID id, UpdateUserRequest request) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + id));
+        userMapper.updateUser(existingUser, request);
+        existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        return userMapper.toUserResponse(userRepository.save(existingUser));
     }
 
     public void deleteUser(UUID id) {

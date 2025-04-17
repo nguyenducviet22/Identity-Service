@@ -27,38 +27,34 @@ public class UserController {
 
     @PostMapping
     public ApiResponse<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) throws Exception {
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-        User user = userService.createUser(request);
-        UserResponse userResponse = userMapper.toUserResponse(user);
-        apiResponse.setResult(userResponse);
-        return apiResponse;
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createUser(request))
+                .build();
     }
 
     @GetMapping
-    public List<UserResponse> getAllUsers(){
+    public ApiResponse<List<UserResponse>> getAllUsers(){
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Username: {}", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-        return userService.getAllUsers().stream()
-                .map(user -> userMapper.toUserResponse(user)).toList();
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userService.getAllUsers())
+                .build();
     }
 
     @GetMapping("/{id}")
     public UserResponse getUser(@PathVariable UUID id){
-        User user = userService.getUser(id);
-        return userMapper.toUserResponse(user);
+        return userService.getUser(id);
     }
 
     @GetMapping("/myInfo")
     public UserResponse getMyInfo(){
-        User user = userService.getMyInfo();
-        return userMapper.toUserResponse(user);
+        return userService.getMyInfo();
     }
 
     @PutMapping("/{id}")
     public UserResponse updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest request){
-        User updatedUser = userService.updateUser(id, request);
-        return userMapper.toUserResponse(updatedUser);
+        return userService.updateUser(id, request);
     }
 
     @DeleteMapping("/{id}")
