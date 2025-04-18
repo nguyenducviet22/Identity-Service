@@ -1,6 +1,7 @@
 package com.ndv.identity_service.domain.dtos.request;
 
 import com.ndv.identity_service.domain.entities.Role;
+import com.ndv.identity_service.validators.DOBConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,6 +32,7 @@ public class UpdateUserRequest {
     String firstName;
     @NotNull(message = "Last name is required!")
     String lastName;
+    @DOBConstraint(min = 18, message = "Invalid date of birth!")
     LocalDate dob;
     @Builder.Default
     Set<UUID> roleIds = new HashSet<>();
