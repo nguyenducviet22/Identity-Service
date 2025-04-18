@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/permissions")
@@ -19,7 +20,7 @@ public class PermissionController {
     private final PermissionService permissionService;
 
     @PostMapping
-    public ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request){
+    public ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request) throws Exception {
         return ApiResponse.<PermissionResponse>builder()
                 .result(permissionService.createPermission(request))
                 .build();
@@ -32,9 +33,9 @@ public class PermissionController {
                 .build();
     }
 
-    @DeleteMapping("/{permission}")
-    public ApiResponse<Void> deletePermission(@PathVariable String permission){
-        permissionService.deletePermission(permission);
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deletePermission(@PathVariable UUID id){
+        permissionService.deletePermission(id);
         return ApiResponse.<Void>builder().build();
     }
 }

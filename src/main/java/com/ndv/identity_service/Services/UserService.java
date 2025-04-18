@@ -3,8 +3,8 @@ package com.ndv.identity_service.Services;
 import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
 import com.ndv.identity_service.domain.dtos.response.UserResponse;
+import com.ndv.identity_service.domain.entities.Role;
 import com.ndv.identity_service.domain.entities.User;
-import com.ndv.identity_service.domain.enums.Role;
 import com.ndv.identity_service.mappers.UserMapper;
 import com.ndv.identity_service.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
     public UserResponse createUser(CreateUserRequest request) throws Exception {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -38,15 +39,16 @@ public class UserService {
 
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
-//        Set<String> roles = new HashSet<>();
-//        roles.add(Role.USER.name());
-//        user.setRoles(roles);
+        Set<UUID> roleIds = request.getRoleIds();
+        List<Role> roles = roleService.getRoleByIds(roleIds);
+        newUser.setRoles(new HashSet<>(roles));
 
         User savedUser = userRepository.save(newUser);
         return userMapper.toUserResponse(savedUser);
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')") //Check role before running method
+//    @PreAuthorize("hasAuthority('SCOPE_ADMIN')") //Check role before running method
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
@@ -72,6 +74,9 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + id));
         userMapper.updateUser(existingUser, request);
         existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        Set<UUID> roleIds = request.getRoleIds();
+        List<Role> roles = roleService.getRoleByIds(roleIds);
+        existingUser.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(existingUser));
     }
 

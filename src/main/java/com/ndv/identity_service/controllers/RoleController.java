@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/roles")
@@ -22,7 +23,7 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping
-    public ApiResponse<RoleResponse> createRole(@RequestBody RoleRequest request){
+    public ApiResponse<RoleResponse> createRole(@RequestBody RoleRequest request) throws Exception {
         return ApiResponse.<RoleResponse>builder()
                 .result(roleService.createRole(request))
                 .build();
@@ -35,9 +36,9 @@ public class RoleController {
                 .build();
     }
 
-    @DeleteMapping("/{role}")
-    public ApiResponse<Void> deletePermission(@PathVariable String role){
-        roleService.deleteRole(role);
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deletePermission(@PathVariable UUID id){
+        roleService.deleteRole(id);
         return ApiResponse.<Void>builder().build();
     }
 }

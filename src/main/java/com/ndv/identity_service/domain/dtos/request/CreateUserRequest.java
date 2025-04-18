@@ -1,5 +1,6 @@
 package com.ndv.identity_service.domain.dtos.request;
 
+import com.ndv.identity_service.domain.entities.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,6 +8,10 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -25,4 +30,6 @@ public class CreateUserRequest {
     @NotNull(message = "Last name is required!")
     String lastName;
     LocalDate dob;
+    @Builder.Default
+    Set<UUID> roleIds = new HashSet<>();
 }

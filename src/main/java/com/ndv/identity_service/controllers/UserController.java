@@ -10,6 +10,7 @@ import com.ndv.identity_service.mappers.UserMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,6 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @PostMapping
     public ApiResponse<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) throws Exception {
@@ -34,8 +34,8 @@ public class UserController {
 
     @GetMapping
     public ApiResponse<List<UserResponse>> getAllUsers(){
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Username: {}", authentication.getName());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Authentication: {}", authentication);
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.getAllUsers())
@@ -43,22 +43,29 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponse getUser(@PathVariable UUID id){
-        return userService.getUser(id);
+    public ApiResponse<UserResponse> getUser(@PathVariable UUID id){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getUser(id))
+                .build();
     }
 
     @GetMapping("/myInfo")
-    public UserResponse getMyInfo(){
-        return userService.getMyInfo();
+    public ApiResponse<UserResponse> getMyInfo(){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfo())
+                .build();
     }
 
     @PutMapping("/{id}")
-    public UserResponse updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest request){
-        return userService.updateUser(id, request);
+    public ApiResponse<UserResponse> updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUser(id, request))
+                .build();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable UUID id){
+    public ApiResponse<Void> deleteUser(@PathVariable UUID id){
         userService.deleteUser(id);
+        return ApiResponse.<Void>builder().build();
     }
 }

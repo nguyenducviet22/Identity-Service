@@ -18,6 +18,8 @@ import java.util.UUID;
 public class Role {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    UUID id;
     String name;
     String description;
 

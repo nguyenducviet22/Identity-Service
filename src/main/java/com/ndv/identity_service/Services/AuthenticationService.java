@@ -21,6 +21,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
 
 @Service
@@ -52,6 +54,7 @@ public class AuthenticationService {
     }
 
     private String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
@@ -91,7 +94,9 @@ public class AuthenticationService {
 
     private String buildScope(User user){
         StringJoiner stringJoiner = new StringJoiner(" ");
-//        if (!CollectionUtils.isEmpty(user.getRoles())) user.getRoles().forEach(s -> stringJoiner.add(s));
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(role -> stringJoiner.add(role.getName()));
+        }
         return stringJoiner.toString();
     }
 }

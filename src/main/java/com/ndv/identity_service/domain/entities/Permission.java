@@ -1,10 +1,10 @@
 package com.ndv.identity_service.domain.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "permissions")
@@ -17,6 +17,8 @@ import lombok.experimental.FieldDefaults;
 public class Permission {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    UUID id;
     String name;
     String description;
 }
