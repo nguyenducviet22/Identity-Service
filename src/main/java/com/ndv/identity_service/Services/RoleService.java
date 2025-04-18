@@ -1,11 +1,11 @@
 package com.ndv.identity_service.Services;
 
-import com.ndv.identity_service.domain.dtos.request.RoleRequest;
+import com.ndv.identity_service.domain.dtos.request.CreateRoleRequest;
+import com.ndv.identity_service.domain.dtos.request.UpdateRoleRequest;
 import com.ndv.identity_service.domain.dtos.response.RoleResponse;
 import com.ndv.identity_service.domain.entities.Permission;
 import com.ndv.identity_service.domain.entities.Role;
 import com.ndv.identity_service.mappers.RoleMapper;
-import com.ndv.identity_service.repositories.PermissionRepository;
 import com.ndv.identity_service.repositories.RoleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class RoleService {
     private final RoleMapper roleMapper;
     private final PermissionService permissionService;
 
-    public RoleResponse createRole(RoleRequest request) throws Exception {
+    public RoleResponse createRole(CreateRoleRequest request) throws Exception {
         if (roleRepository.existsByName(request.getName())) {
             throw new Exception("Role existed!");
         }
@@ -41,6 +41,17 @@ public class RoleService {
         return roles.stream()
                 .map(role -> roleMapper.toDto(role))
                 .toList();
+    }
+
+    public RoleResponse updateRole(UUID id, UpdateRoleRequest request){
+        Role existingRole = roleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Role does not exist with id: " + id));
+        roleMapper.updateRole(existingRole, request);
+        Set<UUID> permissionIDs = request.getPermissionIds();
+        List<Permission> permissions = permissionService.getPermissionByIds(permissionIDs);
+        existingRole.setPermissions(new HashSet<>(permissions));
+        Role savedRole = roleRepository.save(existingRole);
+        return roleMapper.toDto(savedRole);
     }
 
     public void deleteRole(UUID role) {

@@ -47,8 +47,7 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
 
-//    @PreAuthorize("hasAuthority('SCOPE_ADMIN')") //Check role before running method
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')") //Access by Role
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
@@ -69,6 +68,7 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist!")));
     }
 
+    @PreAuthorize("hasAuthority('UPDATE_USER')") //Access by Permission
     public UserResponse updateUser(UUID id, UpdateUserRequest request) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + id));

@@ -24,12 +24,9 @@ public class ApplicationInitConfig {
     ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
-                Set<String> roles = new HashSet<>();
-                roles.add(Role.ADMIN.name());
                 User user = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("SecurityPass123!"))
-//                        .roles(roles)
                         .build();
                 userRepository.save(user);
                 log.warn("Admin account has been created with username is admin and password is SecurityPass123!");
