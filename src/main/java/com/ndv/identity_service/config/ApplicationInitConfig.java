@@ -1,7 +1,6 @@
 package com.ndv.identity_service.config;
 
 import com.ndv.identity_service.domain.entities.User;
-import com.ndv.identity_service.domain.enums.Role;
 import com.ndv.identity_service.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +8,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Configuration
 @RequiredArgsConstructor

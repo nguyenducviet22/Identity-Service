@@ -1,12 +1,10 @@
 package com.ndv.identity_service.controllers;
 
-import com.ndv.identity_service.Services.UserService;
+import com.ndv.identity_service.services.UserService;
 import com.ndv.identity_service.domain.dtos.request.ApiResponse;
 import com.ndv.identity_service.domain.dtos.request.CreateUserRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateUserRequest;
 import com.ndv.identity_service.domain.dtos.response.UserResponse;
-import com.ndv.identity_service.domain.entities.User;
-import com.ndv.identity_service.mappers.UserMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

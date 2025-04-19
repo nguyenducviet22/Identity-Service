@@ -1,4 +1,4 @@
-package com.ndv.identity_service.Services;
+package com.ndv.identity_service.services;
 
 import com.ndv.identity_service.domain.dtos.request.CreateRoleRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateRoleRequest;

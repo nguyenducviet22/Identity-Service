@@ -1,19 +1,17 @@
 package com.ndv.identity_service.controllers;
 
-import com.ndv.identity_service.Services.AuthenticationService;
+import com.ndv.identity_service.domain.dtos.request.LogoutRequest;
+import com.ndv.identity_service.services.AuthenticationService;
 import com.ndv.identity_service.domain.dtos.request.ApiResponse;
 import com.ndv.identity_service.domain.dtos.request.AuthenticationRequest;
 import com.ndv.identity_service.domain.dtos.request.IntrospectRequest;
 import com.ndv.identity_service.domain.dtos.response.AuthenticationResponse;
 import com.ndv.identity_service.domain.dtos.response.IntrospectResponse;
-import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.ParseException;
 
 @RestController
 @RequestMapping("/auth")
@@ -31,10 +29,16 @@ public class AuthenticationController {
     }
 
     @PostMapping("introspect")
-    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws Exception {
         var rs = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
                 .result(rs)
                 .build();
+    }
+
+    @PostMapping("logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws Exception {
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder().build();
     }
 }

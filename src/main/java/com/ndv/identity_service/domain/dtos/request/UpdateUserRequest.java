@@ -32,7 +32,7 @@ public class UpdateUserRequest {
     String firstName;
     @NotNull(message = "Last name is required!")
     String lastName;
-    @DOBConstraint(min = 18, message = "Invalid date of birth!")
+    @DOBConstraint(min = 18, message = "Age must be at least {min} years old!")
     LocalDate dob;
     @Builder.Default
     Set<UUID> roleIds = new HashSet<>();

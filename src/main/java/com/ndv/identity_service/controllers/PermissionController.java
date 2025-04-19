@@ -1,6 +1,6 @@
 package com.ndv.identity_service.controllers;
 
-import com.ndv.identity_service.Services.PermissionService;
+import com.ndv.identity_service.services.PermissionService;
 import com.ndv.identity_service.domain.dtos.request.ApiResponse;
 import com.ndv.identity_service.domain.dtos.request.PermissionRequest;
 import com.ndv.identity_service.domain.dtos.response.PermissionResponse;

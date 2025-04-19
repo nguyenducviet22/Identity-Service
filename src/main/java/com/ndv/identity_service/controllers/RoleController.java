@@ -1,6 +1,6 @@
 package com.ndv.identity_service.controllers;
 
-import com.ndv.identity_service.Services.RoleService;
+import com.ndv.identity_service.services.RoleService;
 import com.ndv.identity_service.domain.dtos.request.ApiResponse;
 import com.ndv.identity_service.domain.dtos.request.CreateRoleRequest;
 import com.ndv.identity_service.domain.dtos.request.UpdateRoleRequest;
