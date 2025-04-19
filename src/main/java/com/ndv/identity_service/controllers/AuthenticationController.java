@@ -1,10 +1,7 @@
 package com.ndv.identity_service.controllers;
 
-import com.ndv.identity_service.domain.dtos.request.LogoutRequest;
+import com.ndv.identity_service.domain.dtos.request.*;
 import com.ndv.identity_service.services.AuthenticationService;
-import com.ndv.identity_service.domain.dtos.request.ApiResponse;
-import com.ndv.identity_service.domain.dtos.request.AuthenticationRequest;
-import com.ndv.identity_service.domain.dtos.request.IntrospectRequest;
 import com.ndv.identity_service.domain.dtos.response.AuthenticationResponse;
 import com.ndv.identity_service.domain.dtos.response.IntrospectResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +37,13 @@ public class AuthenticationController {
     ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws Exception {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder().build();
+    }
+
+    @PostMapping("refresh")
+    ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshRequest request) throws Exception {
+        var rs = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(rs)
+                .build();
     }
 }
